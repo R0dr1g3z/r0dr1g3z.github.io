@@ -1,7 +1,181 @@
-<!DOCTYPE html>
-<html>
-<body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
-</body>
+<!doctype html>
+<html lang="pl">
+  <head>
+	  	<meta charset="utf-8" />
+	  	<title>BankHeist - 5City</title>
+	  	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap" rel="stylesheet"> 
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+		<link href="style.css" rel="stylesheet" type="text/css">
+	</head>
+
+  <body style="background-color: black; ">
+	<nav class="navbar fixed-bottom navbar-dark bg-dark" id="settings">
+		<div class="row px-4">
+			<p class="h5 my-3" style="color:#33da6a;">Wybierz preset:</p>
+
+			<button type="button" class="btn btn-success btn col mx-2"  onClick='setPreset(10,4,2,1.5,3)'>BANK</button>
+			<button type="button" class="btn btn-success btn col mx-2"  onClick='setPreset(15,6,2,1.5,3)'>PACYFIK WEJSCIE</button>
+			<button type="button" class="btn btn-success btn  col mx-2"  onClick='setPreset(18,8,2,1.5,5)'>PACYFIK SKARBIEC GORNY</button>
+			<p class="h5 my-2" style="color:#33da6a;">Lub ustaw parametry samodzielnie:</p>
+		</div>
+			<div class="row w-100 px-4">
+				<div class="col w-25">
+					<p class="h5 d-flex justify-content-left mt-2 mb-2" style="color:#33da6a;">
+						Czas	&nbsp;&nbsp;
+						<span class="badge bg-success" id="timeBadge">x</span>
+					</p>
+					<input type="range" class="form-range" min="5" max="60" step="1" id="time" oninput="timeChange()">
+				</div>
+				<div class="col w-25">
+					<p class="h5 d-flex justify-content-left mt-2 mb-2" style="color:#33da6a;">
+						Ilosc kafelkow	&nbsp;&nbsp;
+						<span class="badge bg-success" id="amountBadge">x</span>
+					</p>
+					<input type="range" class="form-range" min="2" max="21" step="1" id="amount" oninput="amountChange()">
+				</div>
+				<div class="col w-25">
+					<p class="h5 d-flex justify-content-left mt-2 mb-2" style="color:#33da6a;">
+						Ilosc pytan	&nbsp;&nbsp;
+						<span class="badge bg-success" id="questionBadge">x</span>
+					</p>
+					<input type="range" class="form-range" min="1" max="4" step="1" id="question" oninput="questionChange()">
+				</div>
+				<div class="col w-25">
+					<p class="h5 d-flex justify-content-left mt-2 mb-2" style="color:#33da6a;">
+						Czas zanikania	&nbsp;&nbsp;
+						<span class="badge bg-success" id="shrinkingBadge">x</span>
+					</p>
+					<input type="range" class="form-range" min="1.5" max="6" step="0.5" id="shrinking" oninput="shrinkingChange()">
+				</div>
+				<div class="col w-25">
+					<p class="h5 d-flex justify-content-left mt-2 mb-2" style="color:#33da6a;">
+						Liczba prób	&nbsp;&nbsp;
+						<span class="badge bg-success" id="attemptsBadge">x</span>
+					</p>
+					<input type="range" class="form-range" min="3" max="8" step="1" id="attempts" oninput="attemptsChange()">
+				</div>
+			</div>
+		<a class="navbar-brand p-3">Bank/Pacyfik hack - Odwzorowanie hacka z serwera 5City GTA V RolePlay</a>
+	  </nav>
+	  
+	<div class="container-fluid" id="terminal" style="position:absolute; top:25%; ">
+		
+
+		<p id="terminalText" class="h1 text-white d-flex justify-content-center mt-2 mb-2" style="font-family: 'Nanum Gothic Coding';">
+			<button type="button" class="btn btn-primary btn-lg" id="startButton">Start</button>
+		</p>
+		<p  class="d-flex justify-content-center mt-4">
+			<button type="button" class="btn btn-primary" id="correctAnswerButton" data-bs-toggle="modal" data-bs-target="#myModal" style="display:none;">Zobacz poprawna odpowiedz</button>
+		</p>
+		
+	</div>
+	<div class="container-fluid" id="game">
+		<div class="container-fluid my-auto mt-3 " style="background-color: black;">
+			<div class="container-fluid m-auto mt-3" id="tileContainer">
+				<!-- tiles here -->
+			</div>
+			<div class="container" id="menu">
+				<div class="container mt-1">
+					<div class="progress justify-content-center m-1 mt-4 mb-0 bg-success" style="height: 6px;">
+						<div class="" role="progressbar" id="progress-bar" style=" background-color: #33da6a;"></div>
+					</div>
+					<p id="hint" class="h3 d-flex justify-content-center mt-2 mb-2" style="font-family: 'Nanum Gothic Coding'; font-size:24px; color:#33da6a;">tutaj powinno byc pytanie</p>
+				</div>
+				<div class="container mt-0 mb-5">
+					<p class="h5 d-flex justify-content-left mt-0 mb-2" style="color:#33da6a;font-family: 'Nanum Gothic Coding';">Odpowiedz</p>
+					<input autofocus type="text" class="form-control text-success" id="answer" placeholder="niebieski kwadrat" spellcheck="false" name="answer" style="font-family: 'Nanum Gothic Coding';font-size:20px; width:25%; background-color:black; border-color:black; border-bottom-color: #33da6a; border-width: 3px; border-radius:0px;">
+				</div>
+			</div>
+		</div>
+		
+	</div>
+
+	<script type="module" src="src/bankheist.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+	
+	<script>
+		var default_time = 10;
+		var default_value = 4;
+		var default_question = 2;
+		var default_shrinking = 1.5;
+		var default_attempts = 3;
+		
+		
+		document.getElementById("timeBadge").innerHTML=String(default_time);
+		document.getElementById("time").value=default_time;
+		document.getElementById("amountBadge").innerHTML=String(default_value);
+		document.getElementById("amount").value=default_value;
+		document.getElementById("questionBadge").innerHTML=String(default_question);
+		document.getElementById("question").value=default_question;
+		document.getElementById("shrinkingBadge").innerHTML=String(default_shrinking);
+		document.getElementById("shrinking").value=default_shrinking;
+		document.getElementById("attemptsBadge").innerHTML=String(default_attempts);
+		document.getElementById("attempts").value=default_attempts;
+		
+		function timeChange(){
+			document.getElementById("timeBadge").innerHTML=document.getElementById("time").value;
+		}
+		function amountChange(){
+			document.getElementById("amountBadge").innerHTML=document.getElementById("amount").value;
+		}
+		function questionChange(){
+			document.getElementById("questionBadge").innerHTML=document.getElementById("question").value;
+		}
+		function shrinkingChange(){
+			document.getElementById("shrinkingBadge").innerHTML=document.getElementById("shrinking").value;
+		}
+		function attemptsChange(){
+			document.getElementById("attemptsBadge").innerHTML=document.getElementById("attempts").value;
+		}
+		function setPreset(time,amount,questions,shrinking,attempts)
+		{
+			document.getElementById("timeBadge").innerHTML=String(time);
+			document.getElementById("time").value=time;
+			document.getElementById("amountBadge").innerHTML=String(amount);
+			document.getElementById("amount").value=amount;
+			document.getElementById("questionBadge").innerHTML=String(questions);
+			document.getElementById("question").value=questions;
+			document.getElementById("shrinkingBadge").innerHTML=String(shrinking);
+			document.getElementById("shrinking").value=shrinking;
+			document.getElementById("attemptsBadge").innerHTML=String(attempts);
+			document.getElementById("attempts").value=attempts;
+		}
+	</script>
+  
+	<div class="modal" id="myModal">
+		<div class="modal-dialog modal-fullscreen">
+		<div class="modal-content bg-dark text-white">
+	
+		
+	
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="modalTiles"></div>
+				<p id="modalHintLabel" class="h3 d-flex justify-content-center mt-2 mb-2 text-center" style="font-family: 'Nanum Gothic Coding'; font-size:20px; color:white;">PYTANIE:</p>
+				<p id="modalHint" class="h3 d-flex justify-content-center mt-2 mb-2 text-center" style="font-family: 'Nanum Gothic Coding'; font-size:24px; color:#33da6a;">tutaj powinno byc pytanie</p>
+				<p id="modalSequenceLabel" class="h3 d-flex justify-content-center mt-2 mb-2 text-center" style="font-family: 'Nanum Gothic Coding'; font-size:20px; color:white;">KOLEJNOSC KAFELKÓW:</p>
+				<p id="modalSequence" class="h3 d-flex justify-content-center mt-2 mb-2 text-center" style="font-family: 'Nanum Gothic Coding'; font-size:24px; color:#33da6a;">tutaj powinna byc kolejnosc kafelkow</p>
+				<p id="modalCorrectAnswerLabel" class="h3 d-flex justify-content-center mt-2 mb-2 text-center" style="font-family: 'Nanum Gothic Coding'; font-size:20px; color:white;">POPRAWNA ODPOWIEDZ:</p>
+				<p id="modalCorrectAnswer" class="h3 d-flex justify-content-center mt-2 mb-2 text-center" style="font-family: 'Nanum Gothic Coding'; font-size:24px; color:#33da6a;">tutaj powinna byc poprawna odpowiedz</p>
+				<p id="modalAnswerLabel" class="h3 d-flex justify-content-center mt-2 mb-2 text-center" style="font-family: 'Nanum Gothic Coding'; font-size:20px; color:white;">TWOJA ODPOWIEDZ:</p>
+				<p id="modalAnswer" class="h3 d-flex justify-content-center mt-2 mb-2 text-center" style="font-family: 'Nanum Gothic Coding'; font-size:24px; color:#33da6a;">tutaj powinna byc twoja odpowiedz</p>
+				<p class="h5 d-flex justify-content-center mt-2 mb-2 text-center" style="font-family: 'Nanum Gothic Coding'; font-size:24px; color:white;"> ! PAMIETAJ, ZE CIEMNY MOTYW Z PRZEGLADARKI/WTYCZKI ZMIENIA KOLORY !</p>
+			</div>
+	
+			<!-- Modal footer -->
+			<div class="modal-footer">
+				<div class="d-grid gap-2 col-12 mr-0">
+					<button class="btn-lg btn-danger" type="button" data-bs-dismiss="modal">ZAMKNIJ</button>
+				</div>
+			</div>
+	
+		</div>
+		</div>
+	</div>
+  </body>
 </html>
